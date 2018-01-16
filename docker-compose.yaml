@@ -1,0 +1,19 @@
+version: '3'
+services:
+  grafana:
+    image: grafana/grafana
+    volumes:
+      - ./grafana-data:/var/lib/grafana
+    ports:
+      - 3000:3000
+  graphite:
+    image: hopsoft/graphite-statsd
+    ports:
+      - 2003:2003
+      - 8080:80
+      - 8125:8125/udp
+    volumes:
+      - ./graphite-data:/opt/graphite/storage
+      - ./storage-aggregation.conf:/opt/graphite/conf/storage-aggregation.conf
+      - ./storage-schemas.conf:/opt/graphite/conf/storage-schemas.conf
+      - ./config.js:/opt/statsd/config_udp.js

@@ -7,6 +7,7 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect(('localhost', 2003))
 
 interval = 1
+low_res_interval = 10
 now = int(time.time())
 start = now - 3600*24*7
 offset = start % interval
@@ -23,9 +24,12 @@ counter = 0
 for t in range(start, now, interval):
     gauge = metric(t)
     counter += gauge
-    s.send('%s %d %d\n' % ('simulation.low_res.counter', counter, t))
-    s.send('%s %d %d\n' % ('simulation.low_res.counter_last', counter, t))
-    s.send('%s %d %d\n' % ('simulation.low_res.gauge', gauge, t))
     s.send('%s %d %d\n' % ('simulation.high_res.gauge', gauge, t))
+
+    if t % low_res_interval == 0:
+        s.send('%s %d %d\n' % ('simulation.low_res.counter', counter, t))
+        s.send('%s %d %d\n' % ('simulation.low_res.counter_last', counter, t))
+        s.send('%s %d %d\n' % ('simulation.low_res.gauge', gauge, t))
+
 
 s.close()
